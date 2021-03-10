@@ -49,13 +49,13 @@ class axl(object):
         if os.name == "posix":
             wsdl = Path(f"{cwd}/schema/{cucm_version}/AXLAPI.wsdl").as_uri()
         else:
-            wsdl = str(Path(f"{cwd}/schema/{cucm_version}/AXLAPI.wsdl").absolute())
+            wsdl = str(
+                Path(f"{cwd}/schema/{cucm_version}/AXLAPI.wsdl").absolute())
         session = Session()
         session.verify = False
         session.auth = HTTPBasicAuth(username, password)
-        settings = Settings(
-            strict=False, xml_huge_tree=True, xsd_ignore_sequence_order=True
-        )
+        # Getting error got an unexpected keyword argument 'xsd_ignore_sequence_order'
+        settings = Settings(strict=False, xml_huge_tree=True)
         transport = Transport(session=session, timeout=10, cache=SqliteCache())
         axl_client = Client(wsdl, settings=settings, transport=transport)
 
@@ -116,7 +116,7 @@ class axl(object):
         except Fault as e:
             return e
 
-    def get_ldap_dir(self, tagfilter={"name": "", "ldapDn": "", "userSearchBase": "",}):
+    def get_ldap_dir(self, tagfilter={"name": "", "ldapDn": "", "userSearchBase": "", }):
         """
         Get LDAP Syncs
         :return: result dictionary
@@ -360,9 +360,11 @@ class axl(object):
         :return:
         """
         # Get all Regions
-        all_regions = self.client.listRegion({"name": "%"}, returnedTags={"name": ""})
+        all_regions = self.client.listRegion(
+            {"name": "%"}, returnedTags={"name": ""})
         # Make list of region names
-        region_names = [str(i["name"]) for i in all_regions["return"]["region"]]
+        region_names = [str(i["name"])
+                        for i in all_regions["return"]["region"]]
         # Build list of dictionaries to add to region api call
         region_list = []
 
@@ -538,7 +540,6 @@ class axl(object):
         cm_group="Default",
         network_locale="",
     ):
-
         """
         Add a device pool
         :param device_pool: Device pool name
@@ -1063,7 +1064,6 @@ class axl(object):
         run_on_all_nodes="false",
         members=[],
     ):
-
         """
         Add a route list
         :param name: Route list name
@@ -1251,7 +1251,7 @@ class axl(object):
         if members:
             [
                 req["members"]["member"].append(
-                    {"routePartitionName": i, "index": members.index(i) + 1,}
+                    {"routePartitionName": i, "index": members.index(i) + 1, }
                 )
                 for i in members
             ]
@@ -1454,7 +1454,8 @@ class axl(object):
         }
 
         if members:
-            [req["members"]["member"].append({"deviceName": i}) for i in members]
+            [req["members"]["member"].append(
+                {"deviceName": i}) for i in members]
 
         try:
             return self.client.addMediaResourceGroup(req)
@@ -1557,7 +1558,8 @@ class axl(object):
             return e
 
     def get_directory_numbers(
-        self, tagfilter={"pattern": "", "description": "", "routePartitionName": "",}
+        self, tagfilter={"pattern": "",
+                         "description": "", "routePartitionName": "", }
     ):
         """
         Get directory numbers
@@ -1853,23 +1855,24 @@ class axl(object):
             return self.client.updateCtiRoutePoint(**args)
         except Fault as e:
             return e
-    
+
     def get_phones(self, tagfilter={
-            "name": "",
-            "product": "",
-            "description": "",
-            "protocol": "",
-            "locationName": "",
-            "callingSearchSpaceName": ""
-        }):
-        skip=0
+        "name": "",
+                "product": "",
+                "description": "",
+                "protocol": "",
+                "locationName": "",
+                "callingSearchSpaceName": ""
+    }):
+        skip = 0
         a = []
+
         def inner(skip):
             while True:
                 res = self.client.listPhone(
-                            {"name": "%"}, returnedTags=tagfilter, first=1000, skip=skip
-                        )["return"]
-                skip=skip+1000
+                    {"name": "%"}, returnedTags=tagfilter, first=1000, skip=skip
+                )["return"]
+                skip = skip+1000
                 if res is not None and 'phone' in res:
                     yield res['phone']
                 else:
@@ -2021,7 +2024,6 @@ class axl(object):
             return e
 
     def update_phone(self, **args):
-
         """
         lines takes a list of Tuples with properties for each line EG:
 
@@ -2059,7 +2061,8 @@ class axl(object):
 
     def get_device_profiles(
         self,
-        tagfilter={"name": "", "product": "", "protocol": "", "phoneTemplateName": "",},
+        tagfilter={"name": "", "product": "",
+                   "protocol": "", "phoneTemplateName": "", },
     ):
         """
         Get device profile details
@@ -2185,20 +2188,20 @@ class axl(object):
         except Fault as e:
             return e
 
-
     def get_users(self, tagfilter={"userid": "", "firstName": "", "lastName": ""}):
         """
         Get users details
         :return: A list of dictionary's
         """
-        skip=0
+        skip = 0
         a = []
+
         def inner(skip):
             while True:
                 res = self.client.listUser(
-                            {"userid": "%"}, returnedTags=tagfilter, first=1000, skip=skip
-                        )["return"]
-                skip=skip+1000
+                    {"userid": "%"}, returnedTags=tagfilter, first=1000, skip=skip
+                )["return"]
+                skip = skip+1000
                 if res is not None and 'user' in res:
                     yield res['user']
                 else:
@@ -2285,7 +2288,8 @@ class axl(object):
                     defaultProfile=default_profile,
                     subscribeCallingSearchSpaceName=subscribe_css,
                     primaryExtension={"pattern": primary_extension},
-                    associatedGroups={"userGroup": {"name": "Standard CCM End Users"}},
+                    associatedGroups={"userGroup": {
+                        "name": "Standard CCM End Users"}},
                 )
             except Fault as e:
                 return e
@@ -2814,7 +2818,8 @@ class axl(object):
             return e
 
     def get_sip_trunks(
-        self, tagfilter={"name": "", "sipProfileName": "", "callingSearchSpaceName": ""}
+        self, tagfilter={"name": "", "sipProfileName": "",
+                         "callingSearchSpaceName": ""}
     ):
         try:
             return self.client.listSipTrunk({"name": "%"}, returnedTags=tagfilter)[

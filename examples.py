@@ -1,18 +1,20 @@
 import os
 from ciscoaxl import axl
-from py_dotenv import read_dotenv
+from dotenv import load_dotenv
+from pathlib import Path
 
-dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
-read_dotenv(dotenv_path)
+dotenv_path = Path('.') / '.config/.env'
+load_dotenv(dotenv_path=dotenv_path)
 
 cucm = os.getenv("cucm")
 username = os.getenv("username")
 password = os.getenv("password")
 version = os.getenv("version")
+print(cucm)
 
 
-ucm = axl(username=username, password=password, cucm=cucm, cucm_version=version)
-
+ucm = axl(username=username, password=password,
+          cucm=cucm, cucm_version=version)
 
 
 """
@@ -31,17 +33,17 @@ for phone in ucm.get_phones():
 
 # for phone in list(ucm.get_phones()):
 #     print(phone)
-    # for each in phone:
-    #     print(each)
-    # with open("test.csv", 'w') as fs:
-    #     fs.write(phone)
+# for each in phone:
+#     print(each)
+# with open("test.csv", 'w') as fs:
+#     fs.write(phone)
 
 """Get All Users"""
-# for user in ucm.get_users():
-#     try:
-#         print(user)
-#     except Exception as e:
-#         print(e)
+for user in ucm.get_users():
+    try:
+        print(user)
+    except Exception as e:
+        print(e)
 
 """'Get Specific User"""
 # user = ucm.get_user(user_id='mscott')
@@ -64,8 +66,8 @@ Phones
 
 # ---Get Phones
 
-# for phone in ucm.get_phones():
-#     print(phone.name)
+for phone in ucm.get_phones():
+    print(phone.name)
 
 # ---Get Specific Phone
 
@@ -90,14 +92,15 @@ Phones
 # )
 
 # dev = ucm.add_phone(
-#             name='SEP001122334455',
-#             product='Cisco 8861',
-#             device_pool='Default',
-#             location='Hub_None',
-#             protocol='SIP',
-#             lines=[
-#                 ('1102', '', 'Robert Smith', 'Robert Smith', 'Robert Smith - 1102', '+1408202XXXX')
-#             ])
+#     name='SEP001122334455',
+#     product='Cisco 8861',
+#     device_pool='Default',
+#     location='Hub_None',
+#     protocol='SIP',
+#     lines=[
+#                 ('1102', '', 'Robert Smith', 'Robert Smith',
+#                  'Robert Smith - 1102', '+1408202XXXX')
+#     ])
 # print(dev)
 
 # ---Delete Phone
